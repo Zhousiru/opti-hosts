@@ -2,7 +2,7 @@
 
 Resolve domains by latency, not CDN zones.
 
-> [!WARNING]  
+> [!WARNING]
 > Under development...
 
 ## How to Use
