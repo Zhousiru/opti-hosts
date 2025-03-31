@@ -1,0 +1,27 @@
+// ```
+// # OPTI-HOSTS <Domain> [<Location> * <Limit>, <Location>, ...]
+// ```
+
+WHITESPACE = _{ " " }
+
+domain_char   = { ASCII_ALPHANUMERIC | "_" | "-" | "." }
+location_char = { ASCII_ALPHANUMERIC | "_" | "-" | "." | "(" | ")" | "&" }
+
+domain   = @{ domain_char+ }
+location = @{ location_char+ }
+limit    = @{ ASCII_DIGIT+ }
+
+location_limit_item = !{
+    location ~ "*" ~ limit
+  | location
+}
+
+location_limit_array = !{
+    "[" ~ location_limit_item ~ ("," ~ location_limit_item)* ~ "]"
+}
+
+expression = ${ domain ~ " "+ ~ location_limit_array }
+
+prefix = ${ "OPTI-HOSTS" ~ &" " }
+
+directive = { SOI ~ "#" ~ prefix ~ expression ~ EOI }
