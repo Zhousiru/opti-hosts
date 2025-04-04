@@ -44,10 +44,19 @@ pub fn parse_hosts(hosts: &str) -> Vec<DirectiveMeta> {
             .next()
             .and_then(|v| v.as_str().parse().ok())
             .unwrap_or(1);
+
+          if limit_value < 1 {
+            continue;
+          }
+
           location_params.push(LocationParam {
             location: location_value,
             limit: limit_value,
           });
+        }
+
+        if location_params.len() < 1 {
+          continue;
         }
 
         directive_metas.push(DirectiveMeta {

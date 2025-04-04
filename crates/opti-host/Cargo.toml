@@ -1,0 +1,10 @@
+[package]
+name = "opti-host"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pest = "2"
+pest_derive = "2"
+tokio = { version = "1", features = ["full"] }
+globalping-client = { workspace = true }
