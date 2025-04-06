@@ -1,6 +1,3 @@
 [workspace]
 members = ["crates/*"]
 resolver = "2"
-
-[workspace.dependencies]
-globalping-client = { path = "crates/globalping-client" }

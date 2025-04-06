@@ -1,8 +1,13 @@
+use anyhow::Result;
+use measure::globalping::measure_dig;
 use parser::parse_hosts;
+use tokio::task::JoinSet;
 
+mod measure;
 mod parser;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<()> {
   let result = parse_hosts(
     r#"192.168.1.1 router.home
 127.0.0.1 localhost
@@ -12,5 +17,19 @@ fn main() {
 # invalid below
 # OPTI-HOSTS rua.sh [Tencent * 0]"#,
   );
-  println!("{:#?}", result)
+
+  let mut join_set = JoinSet::new();
+
+  for item in result {
+    join_set.spawn(async move {
+      let ips = measure_dig(&item.domain, item.location_params)
+        .await
+        .unwrap();
+      println!("DOMAIN: {}, IPS: {:?}", item.domain, ips);
+    });
+  }
+
+  join_set.join_all().await;
+
+  Ok(())
 }
