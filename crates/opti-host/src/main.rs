@@ -1,5 +1,5 @@
 use anyhow::Result;
-use measure::globalping::measure_dig;
+use measure::{globalping::measure_dig, ping::batch_measure_ping};
 use parser::parse_hosts;
 use tokio::task::JoinSet;
 
@@ -26,6 +26,10 @@ async fn main() -> Result<()> {
         .await
         .unwrap();
       println!("DOMAIN: {}, IPS: {:?}", item.domain, ips);
+
+      let result = batch_measure_ping(ips).await;
+
+      println!("LATENCY FOR {}: {:?}", item.domain, result)
     });
   }
 

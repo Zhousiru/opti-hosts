@@ -3,10 +3,10 @@ use std::{collections::HashSet, sync::LazyLock};
 use anyhow::{Context, Result, bail};
 use tokio::time::sleep;
 
-use super::constants::{MAX_TRIES, TRIES_INTERVAL};
+use super::constants::{GLOBALPING_MAX_TRIES, GLOBALPING_TRIES_INTERVAL};
 use crate::{
   measure::{
-    constants::API_BASE,
+    constants::GLOBALPING_API_BASE,
     models::{
       CreateMeasurementRequest, CreateMeasurementResponse, DnsMeasurementResponse, LocationOption,
     },
@@ -27,7 +27,7 @@ pub async fn measure_dig(domain: &str, location_params: Vec<LocationParam>) -> R
     .collect();
 
   let resp = CLIENT
-    .post(format!("{}/v1/measurements", API_BASE))
+    .post(format!("{}/v1/measurements", GLOBALPING_API_BASE))
     .json(&CreateMeasurementRequest {
       r#type: "dns".into(),
       target: domain.into(),
@@ -48,12 +48,15 @@ pub async fn measure_dig(domain: &str, location_params: Vec<LocationParam>) -> R
 
   loop {
     tries += 1;
-    if tries > MAX_TRIES {
+    if tries > GLOBALPING_MAX_TRIES {
       bail!("max get measurement tries limit exceeded");
     }
 
     let resp = CLIENT
-      .get(format!("{}/v1/measurements/{}", API_BASE, measurement_id))
+      .get(format!(
+        "{}/v1/measurements/{}",
+        GLOBALPING_API_BASE, measurement_id
+      ))
       .send()
       .await
       .context("Failed to send get globalping measurement request")?;
@@ -62,14 +65,14 @@ pub async fn measure_dig(domain: &str, location_params: Vec<LocationParam>) -> R
 
     let resp = match resp {
       Err(_) => {
-        sleep(TRIES_INTERVAL).await;
+        sleep(GLOBALPING_TRIES_INTERVAL).await;
         continue;
       }
       Ok(resp) => resp,
     };
 
     if resp.status != "finished" {
-      sleep(TRIES_INTERVAL).await;
+      sleep(GLOBALPING_TRIES_INTERVAL).await;
       continue;
     }
 
