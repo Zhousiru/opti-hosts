@@ -5,7 +5,7 @@
 WHITESPACE = _{ " " }
 
 domain_char   = { ASCII_ALPHANUMERIC | "_" | "-" | "." }
-location_char = { ASCII_ALPHANUMERIC | "_" | "-" | "." | "(" | ")" | "&" }
+location_char = { ASCII_ALPHANUMERIC | "_" | "-" | "." | "(" | ")" | "&" | " " }
 
 domain   = @{ domain_char+ }
 location = @{ location_char+ }
