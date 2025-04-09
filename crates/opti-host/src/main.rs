@@ -1,39 +1,71 @@
-use anyhow::Result;
-use measure::{globalping::measure_dig, ping::batch_measure_ping};
+use anyhow::{Context, Result};
+use clap::Parser;
+use measure::globalping::measure_dig;
 use parser::parse_hosts;
-use tokio::task::JoinSet;
+use tokio::{fs, task::JoinSet};
 
 mod measure;
 mod parser;
 
+#[derive(clap::Parser, Debug)]
+#[command(name = "opti-host")]
+#[command(about = "Resolve domains by latency, not CDN zones", long_about = None)]
+struct CliArgs {
+  /// Preview outputs without making any changes to hosts file
+  #[arg(long, default_value_t = false)]
+  dry_run: bool,
+
+  /// Hosts file path
+  #[arg(long, default_value = "/etc/hosts")]
+  file: String,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
-  let result = parse_hosts(
-    r#"192.168.1.1 router.home
-127.0.0.1 localhost
-# OPTI-HOSTS example.com [Beijing, HK * 2, AS6939]
-# OPTI-HOSTS rua.sh [Alibaba * 2]
-127.0.0.2 notlocalhost
-# invalid below
-# OPTI-HOSTS rua.sh [Tencent * 0]"#,
+  let cli_args = CliArgs::parse();
+
+  let content = String::from_utf8(fs::read(&cli_args.file).await.context(
+    "Failed to read the hosts file. Please make sure you have sufficient permissions to edit the hosts file.",
+  ).unwrap()).context("Failed to read the hosts file. Please make sure the file is encoded in UTF-8").unwrap();
+
+  let directive_metas = parse_hosts(&content);
+
+  println!(
+    "{} directive(s) parsed from `{}`",
+    directive_metas.len(),
+    cli_args.file
   );
+
+  println!("Retrieving IP(s) from Globalping...");
 
   let mut join_set = JoinSet::new();
 
-  for item in result {
+  for meta in directive_metas {
     join_set.spawn(async move {
-      let ips = measure_dig(&item.domain, item.location_params)
+      let ips = measure_dig(&meta.domain, &meta.location_params)
         .await
         .unwrap();
-      println!("DOMAIN: {}, IPS: {:?}", item.domain, ips);
 
-      let result = batch_measure_ping(ips).await;
-
-      println!("LATENCY FOR {}: {:?}", item.domain, result)
+      println!(
+        "{} IP(s) of `{}` retrieved from [{}]:",
+        ips.len(),
+        meta.domain,
+        meta
+          .location_params
+          .iter()
+          .map(|x| { x.to_string() })
+          .collect::<Vec<_>>()
+          .join(", ")
+      );
+      for ip in ips {
+        println!(" - {}", ip)
+      }
     });
   }
 
   join_set.join_all().await;
+
+  println!("Testing latency...");
 
   Ok(())
 }

@@ -1,4 +1,4 @@
-use std::vec;
+use std::{fmt, vec};
 
 use pest::Parser;
 use pest_derive::Parser;
@@ -18,6 +18,12 @@ pub struct DirectiveMeta {
   pub line_index: usize,
   pub domain: String,
   pub location_params: Vec<LocationParam>,
+}
+
+impl fmt::Display for LocationParam {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    write!(f, "{} * {}", self.location, self.limit)
+  }
 }
 
 pub fn parse_hosts(hosts: &str) -> Vec<DirectiveMeta> {
