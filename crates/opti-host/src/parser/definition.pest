@@ -4,11 +4,13 @@
 
 WHITESPACE = _{ " " }
 
-domain_char   = { ASCII_ALPHANUMERIC | "_" | "-" | "." }
-location_char = { ASCII_ALPHANUMERIC | "_" | "-" | "." | "(" | ")" | "&" | " " }
+domain_char            = { ASCII_ALPHANUMERIC | "_" | "-" | "." }
+location_char_no_space = { ASCII_ALPHANUMERIC | "_" | "-" | "." | "(" | ")" | "&" }
 
 domain   = @{ domain_char+ }
-location = @{ location_char+ }
+location = @{
+    location_char_no_space+ ~ (" "+ ~ location_char_no_space+)*
+}
 limit    = @{ ASCII_DIGIT+ }
 
 location_limit_item = !{
