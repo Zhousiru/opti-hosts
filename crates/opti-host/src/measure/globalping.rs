@@ -15,7 +15,7 @@ use crate::{
   parser::LocationParam,
 };
 
-static CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| reqwest::Client::new());
+static CLIENT: LazyLock<reqwest::Client> = LazyLock::new(reqwest::Client::new);
 
 pub async fn measure_dig(domain: &str, location_params: &[LocationParam]) -> Result<Vec<String>> {
   let location_option = location_params
