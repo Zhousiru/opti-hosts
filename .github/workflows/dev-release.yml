@@ -39,7 +39,7 @@ jobs:
 
       - name: Prepare release files
         run: |
-          mkdir -p release
+          mkdir -p dist
           cp target/x86_64-unknown-linux-gnu/release/opti-hosts dist/opti-hosts-x86_64-unknown-linux-gnu
           cp target/x86_64-unknown-linux-musl/release/opti-hosts dist/opti-hosts-x86_64-unknown-linux-musl
           cp target/aarch64-unknown-linux-gnu/release/opti-hosts dist/opti-hosts-aarch64-unknown-linux-gnu
