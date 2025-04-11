@@ -127,7 +127,7 @@ async fn main() -> Result<()> {
     let should_replace = if next_line_index < new_content_lines.len() {
       let next_line = &new_content_lines[next_line_index];
       if next_line.starts_with("#") {
-        false
+        next_line == "# Failed to determine optimal IP"
       } else {
         let parts: Vec<&str> = next_line.split_whitespace().collect();
         parts.len() >= 2 && parts[1] == meta.domain
@@ -150,8 +150,10 @@ async fn main() -> Result<()> {
   println!("{:-^42}", " Generated hosts ");
 
   if !cli_args.dry_run {
-    println!("Writing to hosts file `{}`", cli_args.file);
-    fs::write(cli_args.file, new_content).await.context("Failed to write the hosts file. Please make sure you have sufficient permissions to write the hosts file").unwrap();
+    fs::write(&cli_args.file, new_content).await.context("Failed to write the hosts file. Please make sure you have sufficient permissions to write the hosts file").unwrap();
+    println!("Hosts file `{}` has been updated", cli_args.file);
+  } else {
+    println!("No changes were made due to the `--dry-run` flag");
   }
 
   Ok(())
