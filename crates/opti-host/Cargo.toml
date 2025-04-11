@@ -1,5 +1,5 @@
 [package]
-name = "opti-host"
+name = "opti-hosts"
 version = "0.1.0"
 edition = "2024"
 
