@@ -11,7 +11,7 @@ mod measure;
 mod parser;
 
 #[derive(clap::Parser, Debug)]
-#[command(name = "opti-host")]
+#[command(name = "opti-hosts")]
 #[command(about = "Resolve domains by latency, not CDN zones", long_about = None)]
 struct CliArgs {
   /// Preview outputs without making any changes to hosts file

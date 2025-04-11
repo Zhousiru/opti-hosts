@@ -2,23 +2,33 @@
 
 Resolve domains by latency, not CDN zones.
 
-> [!WARNING]
-> Under development...
+## Quickstart
 
-## How to Use
+1. Add directives in your `/etc/hosts`:
 
-Edit your `/etc/hosts`:
+   ```plaintext
+   # ...
 
-```text
-# ...
+   # OPTI-HOSTS example.com [Beijing, HK * 2, AS6939]
+   # HINT: Record for example.com will be generated here.
 
-# OPTI-HOSTS example.com [Beijing, HK * 2, AS6939]
-# HINT: Record for example.com will be generated here.
+   # ...
+   ```
 
-# ...
-```
+2. Run:
 
-## Explanation
+   ```bash
+   sudo opti-hosts
+   sudo opti-hosts --dry-run # Preview changes
+   ```
+
+3. Add to your crontab (recommend):
+
+   ```bash
+   0 */12 * * * opti-hosts
+   ```
+
+## Hosts Directive
 
 ```
 # OPTI-HOSTS <Domain> [<Location> * <Limit>, <Location>, ...]
@@ -39,3 +49,16 @@ Edit your `/etc/hosts`:
   The maximum number of nodes to use for a particular location.
 
   Defaults to 1.
+
+## Usage
+
+```bash
+opti-hosts [OPTIONS]
+```
+
+```plaintext
+Options:
+      --dry-run      Preview outputs without making any changes to hosts file
+      --file <FILE>  Hosts file path [default: /etc/hosts]
+  -h, --help         Print help
+```
