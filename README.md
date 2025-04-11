@@ -61,4 +61,5 @@ Options:
       --dry-run      Preview outputs without making any changes to hosts file
       --file <FILE>  Hosts file path [default: /etc/hosts]
   -h, --help         Print help
+  -V, --version      Print version
 ```
