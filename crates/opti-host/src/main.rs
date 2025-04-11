@@ -44,7 +44,10 @@ async fn main() -> Result<()> {
   let directive_ips = join_all(directive_metas.iter().map(|meta| async move {
     let ips = measure_dig(&meta.domain, &meta.location_params)
       .await
-      .unwrap();
+      .unwrap_or_else(|e| {
+        println!("Failed to retrieve IP(s) for `{}`: {}", meta.domain, e);
+        vec![]
+      });
 
     println!(
       "{} IP(s) of `{}` retrieved from [{}]",
@@ -143,7 +146,7 @@ async fn main() -> Result<()> {
     }
   }
 
-  let new_content = new_content_lines.join("\n");
+  let new_content = new_content_lines.join("\n") + "\n";
 
   println!("{:-^42}", " Generated hosts ");
   println!("{}", new_content);

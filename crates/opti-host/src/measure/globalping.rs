@@ -49,7 +49,7 @@ pub async fn measure_dig(domain: &str, location_params: &[LocationParam]) -> Res
   loop {
     tries += 1;
     if tries > GLOBALPING_MAX_TRIES {
-      bail!("max get measurement tries limit exceeded");
+      bail!("Max get measurement tries limit exceeded");
     }
 
     let resp = CLIENT
