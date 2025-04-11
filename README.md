@@ -1,32 +1,45 @@
 # Opti Hosts
 
+[[English]](./README.md) [[中文]](./README.zh-CN.md)
+
 Resolve domains by latency, not CDN zones.
+
+This tool retrieves DNS records from Globalping, selects IPs with lowest latency, and updates the hosts file.
 
 ## Quickstart
 
-1. Add directives in your `/etc/hosts`:
+1.  Download from [Releases](https://github.com/Zhousiru/opti-hosts/releases/latest).
 
-   ```plaintext
-   # ...
+    For example:
 
-   # OPTI-HOSTS example.com [Beijing, HK * 2, AS6939]
-   # HINT: Record for example.com will be generated here.
+    ```bash
+    sudo wget https://github.com/Zhousiru/opti-hosts/releases/download/latest/opti-hosts-x86_64-unknown-linux-gnu -O /usr/local/bin/opti-hosts
+    sudo chmod +x /usr/local/bin/opti-hosts
+    ```
 
-   # ...
-   ```
+2.  Add directives in your `/etc/hosts`:
 
-2. Run:
+    ```plaintext
+    # ...
 
-   ```bash
-   sudo opti-hosts
-   sudo opti-hosts --dry-run # Preview changes
-   ```
+    # OPTI-HOSTS example.com [Beijing, HK * 2, AS6939]
+    # HINT: Record for example.com will be generated here.
 
-3. Add to your crontab (recommend):
+    # ...
+    ```
 
-   ```bash
-   0 */12 * * * opti-hosts
-   ```
+3.  Run:
+
+    ```bash
+    sudo opti-hosts
+    sudo opti-hosts --dry-run # Preview changes
+    ```
+
+4.  Add to your crontab (recommend):
+
+    ```bash
+    0 */12 * * * opti-hosts
+    ```
 
 ## Hosts Directive
 
